@@ -11,8 +11,15 @@
 * Một cách rõ ràng và thông thường nhất mà chúng ta thấy và đặc biệt trong lĩnh vực IT sử dụng hằng ngày. Chúng ta sử dụng SSH như một công cụ cơ bản và cần thiết cho việc truy cập, remote,....
 vậy đi sâu bên trong tools đó, nó làm gì?
 
+giao thức SSH hoạt động dựa trên 3 lớp: transport, authentication and connection layer
 
-Mô hình hoạt động:
+.Mô hình hoạt động:
+
+. SSH Connection: Kết nối được thực hiện thông qua giao thức xác thực người dùng. Nó ghép nhiều kênh được mã hóa đồng thời khác nhau thành các kênh logic qua kết nối đã được xác thực. Cho phép tạo đường hầm các phiên đăng nhập và chuyển tiếp qua TCP. Cung cấp các dịch vụ kiểm soát luồng qua các kênh. Lớp này quản lí phiên SSH, ghép kênh phiên, chuyển tiếp X11, chuyển tiếp TCP, Shell, thực thi chương trình từ xa....
+
+. SSH Authentication: Thực hiện chứng thực người dùng. Thường được sử dụng để thiết lập các kết nối đến transport layer và cung cấp nhiều cơ chế khác nhau để chứng thực người dùng bao gồm các cơ chế chứng thực mật khẩu, public key, host base và hallenge-response, PAM (pluggable authentication modules), Generic Security Services API (GSSAPI) ...
+
+. SSH Trans: cung cấp các chứng thực server, tính bảo mật và toàn vẹn data qua TCP thông qua các thuật toán và key-exchanges. key-exchanges
 
 [plantuml, ssh protocol, png]
 
