@@ -13,6 +13,25 @@ vậy đi sâu bên trong tools đó, nó làm gì?
 
 giao thức SSH hoạt động dựa trên 3 lớp: transport, authentication and connection layer
 
+.Cấu trúc SSH tools
+
+Sơ đồ dưới đây mô tả đơn giản về cấu trúc của ssh
+
+[ditaa]
+----
++--------------------+
++ ssh connection     +
++--------------------+
++ ssh userauthen     +
++--------------------+
++ ssh transport      +
++--------------------+
++       TCP          +
++--------------------+
++       IP           +
++--------------------+
+----
+
 .Mô hình hoạt động:
 
 . SSH Connection: Kết nối được thực hiện thông qua giao thức xác thực người dùng. Nó ghép nhiều kênh được mã hóa đồng thời khác nhau thành các kênh logic qua kết nối đã được xác thực. Cho phép tạo đường hầm các phiên đăng nhập và chuyển tiếp qua TCP. Cung cấp các dịch vụ kiểm soát luồng qua các kênh. Lớp này quản lí phiên SSH, ghép kênh phiên, chuyển tiếp X11, chuyển tiếp TCP, Shell, thực thi chương trình từ xa....
