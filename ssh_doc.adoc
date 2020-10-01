@@ -8,12 +8,13 @@
 
 * SSH - Secure shell là một công cụ và phương thức phổ biến nhất được sử dụng để remote server. SSH sẽ cung cấp các cơ chế thiết lập kết nối giữa 2 bên 1 cách an toàn và bảo mật.
 
-* Một cách rõ ràng và thông thường nhất mà chúng ta thấy và đặc biệt trong lĩnh vực IT sử dụng hằng ngày. Chúng ta sử dụng SSH như một công cụ cơ bản và cần thiết cho việc truy cập, remote,....
+* Thông thường và đặc biệt là trong lĩnh vực IT. Chúng ta sử dụng SSH như một công cụ cơ bản và cần thiết cho việc truy cập, remote,....
 vậy đi sâu bên trong tools đó, nó làm gì?
 
-giao thức SSH hoạt động dựa trên 3 lớp: transport, authentication and connection layer
 
 .Cấu trúc SSH tools
+
+giao thức SSH hoạt động dựa trên 3 lớp: transport, authentication and connection layer
 
 Sơ đồ dưới đây mô tả đơn giản về cấu trúc của ssh
 
@@ -34,12 +35,13 @@ Sơ đồ dưới đây mô tả đơn giản về cấu trúc của ssh
 
 .Mô hình hoạt động:
 
-. SSH Connection: Kết nối được thực hiện thông qua giao thức xác thực người dùng. Nó ghép nhiều kênh được mã hóa đồng thời khác nhau thành các kênh logic qua kết nối đã được xác thực. Cho phép tạo đường hầm các phiên đăng nhập và chuyển tiếp qua TCP. Cung cấp các dịch vụ kiểm soát luồng qua các kênh. Lớp này quản lí phiên SSH, ghép kênh phiên, chuyển tiếp X11, chuyển tiếp TCP, Shell, thực thi chương trình từ xa....
+. SSH Connection: Kết nối được thực hiện thông qua giao thức xác thực người dùng. Nó ghép nhiều kênh được mã hóa đồng thời khác nhau thành các kênh logic qua kết nối đã được xác thực. Cho phép tạo đường hầm các phiên đăng nhập và chuyển tiếp qua TCP. Cung cấp các dịch vụ kiểm soát luồng qua các kênh. Lớp này quản lí phiên SSH, ghép kênh phiên, chuyển tiếp X11, chuyển tiếp TCP, Shell, thực thi chương trình từ xa ...
 
 . SSH Authentication: Thực hiện chứng thực người dùng. Thường được sử dụng để thiết lập các kết nối đến transport layer và cung cấp nhiều cơ chế khác nhau để chứng thực người dùng bao gồm các cơ chế chứng thực mật khẩu, public key, host base và hallenge-response, PAM (pluggable authentication modules), Generic Security Services API (GSSAPI) ...
 
-. SSH Trans: cung cấp các chứng thực server, tính bảo mật và toàn vẹn data qua TCP thông qua các thuật toán và key-exchanges. key-exchanges
+. SSH Trans: cung cấp các chứng thực server, tính bảo mật và toàn vẹn data qua TCP thông qua các thuật toán và key-exchanges.
 
+.Tóm tắt trình tự thiết lập kết nối giữa client và server sử dụng giao thức ssh
 [plantuml, ssh protocol, png]
 
 ....
@@ -54,6 +56,7 @@ Server <- Client : Cho phép đăng nhập vào server: (username & password)
 @enduml
 ....
 
+.Bảo mật trong SSH
 
 có 3 dạng mã hóa cơ bản trong SSH
 
@@ -64,23 +67,25 @@ có 3 dạng mã hóa cơ bản trong SSH
 
 . Mã hóa đối xứng
 
-..  Mã hóa đối xứng là gì trong ssh?
+.. Mã hóa đối xứng là gì trong ssh?
 
-- Mã hóa đối xứng là một dạng của mã hóa khi mà các secret key được thực hiện cho việc mã hóa và giải mã 1 messages (mình tạm gọi là gói tin dù không chính xác) trên cả client và server (có thể gọi là mã hóa 2 chiều) một cách hiệu quả hơn.Bất kì ai sở hữu key đều có thể giải mã message được chuyển đi.
+image::images/Symmetric.PNG[]
+
+- Mã hóa đối xứng là một dạng của mã hóa khi mà các secret key được thực hiện cho việc mã hóa và giải mã 1 messages (mình tạm gọi là gói tin dù không chính xác) trên cả client và server (có thể gọi là mã hóa 2 chiều) một cách hiệu quả hơn. Bất kì ai sở hữu key đều có thể giải mã message được chuyển đi.
 
 - Mã hóa đối xứng còn được gọi là `shared key` và `share secret key`. Thường thì sẽ chỉ có 1 key được dùng. Trong một vài trường hợp thì 1 key có thể được dùng để tính toán và sử dụng key khác. Cả client và server sẽ tạo ra 1 secret key. Quá trình tạo ra secret key này được thực hiện bởi `key exchange algorithm`.
 
-
 .. Mã hóa này có an toàn không ?
 
-- Vì key không được truyền giữa client và server mà thay vào đó được tạo ra bằng thuật toán, cho nên nếu có 1 máy khác capture được gói tin thì cũng sẽ không thể tính toán để phân tách key vì chúng không biết được thuật toán tạo ra key. Tuy nhiên ,các secret token chỉ được sử dụng cho 1 phiên ssh nhất định. Khi key đã được tạo, tất cả các gói tin được truyền giữa 2 máy phải được mã hóa kể cả khi login bằng username và pasword do user điền vào.
+- Vì key không được truyền giữa client và server mà thay vào đó được tạo ra bằng thuật toán, cho nên nếu có 1 máy khác capture được gói tin thì cũng sẽ không thể tính toán để phân tách key vì chúng không biết được thuật toán tạo ra key. Tuy nhiên, các secret token chỉ được sử dụng cho 1 phiên ssh nhất định. Khi key đã được tạo, tất cả các gói tin được truyền giữa 2 máy phải được mã hóa kể cả khi login bằng username và pasword do user điền vào.
 
 - Một số dạng mã hóa đối xứng phổ biến như là: AES (Advanced Encryption Standard), CAST128, Blowfish ...
-
 
 .Mã hóa không đối xứng
 
 .. Mã hóa đối xứng ?
+
+image::images/Encryption.PNG[]
 
 - Không giống như mã hóa đối xứng, mã hóa không đối xứng sẽ sử dụng 2 key khác nhau để mã hóa và giải mã được gọi là public key và private key.
 
@@ -90,7 +95,7 @@ có 3 dạng mã hóa cơ bản trong SSH
 
 .. Mức độ an toàn.
 
-- Khi kết nối symmetrict an toàn đã được thiết lập, server sử dụng public key của client để tạo và challenge và truyền nó tới client để chứng thực. Nếu client có thể giải mã tin nhắn, có nghĩa là nó đang giữa đúng private key cần thiết cho kết nối. Phiên giao dịch SSH bắt đầu.
+- Khi symmetrict kết nối an toàn đã được thiết lập, server sử dụng public key của client để tạo, thực thi và truyền nó tới client để chứng thực. Nếu client có thể giải mã tin nhắn, có nghĩa là nó đang giữa đúng private key cần thiết cho kết nối. Phiên giao dịch SSH bắt đầu.
 
 .Hashing
 
