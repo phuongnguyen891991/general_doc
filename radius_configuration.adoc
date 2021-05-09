@@ -1,0 +1,50 @@
+Setup and configure Radius server on raspberry pi:
+1. Install 
+  # apt-get install freeradius  -y
+
+2. edit/etc/freeradius/3.0/users
+ The command is “üser name” Cleartext-Password := “”Password”
+ For example, ”John Doe” Cleartext-Password := “hello”  
+
+3. To add Clients (client is the access point IP/Subnet which needs to direct messages to RADIUS server for authentication):
+
+You need to edit/etc/freeradius/3.0/clients.conf.
+In the example given below, I am allowing access points having IP in subnet 192.168.0.0/16
+
+# Allow any address that starts with 192.168
+client 192.168.0.0/16 {
+secret = helloworld
+shortname = office-network
+}
+
+or to allow any device with any IP:
+client 0.0.0.0/0 {
+secret = helloworld
+shortname = office-network
+}
+
+4. Restart sservice
+#service freeradius stop
+#service freeradius start
+
+5. Test
+ # radtest “username” “password” localhost 1812 testing123
+Example,
+radtest John Doe hello localhost 1812 testing123
+
+DEBUG 
+enable log on radius server: https://www.techonia.com/5767/log-authentication-requests-freeradius
+
+#define EAP_IDENTITY		1
+#define EAP_NOTIFICATION	2
+#define EAP_NAK			3
+#define EAP_MD5			4
+#define EAP_OTP			5
+#define EAP_GTC			6
+#define EAP_TLS			13
+#define EAP_EXPANDED		254
+#define BCM_EAP_SES		10
+#define BCM_EAP_EXP_LEN		12  /* EAP_LEN 5 + 3 bytes for SMI ID + 4 bytes for ven type */
+#define BCM_SMI_ID		0x113d
+
+
