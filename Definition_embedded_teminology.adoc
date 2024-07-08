@@ -1,0 +1,23 @@
+= C++ definition
+:sectnums: all
+:sectnumlevels: 5
+:toc: left
+:toclevels: 9
+:toc-title: Content
+
+:description: Example AsciiDoc document
+:keywords: AsciiDoc
+:imagesdir: ./images
+---
+
+== Khái niệm toolchain
+
+== Static lib
+
+== Share lib
+
+== Uboot
+* Khởi tạo phần cứng và load các thành phần khác của OS: kernel, rootfs, device tree lên RAM và trao quyền lại cho linux kernel.
+
+== Boot loader
+* Chương trình có chưng năng load hệ điều hành vào trong bộ nhớ.

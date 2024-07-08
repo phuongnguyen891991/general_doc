@@ -1,0 +1,192 @@
+= Matter Quick Note
+:sectnums: all
+:sectnumlevels: 5
+:toc: left
+:toclevels: 9
+:toc-title: Content
+
+:description: Cơ bản vể Matter technology
+:keywords: AsciiDoc
+:imagesdir: ./Images
+:sourcedir: ./Config
+---
+
+== Đặt vấn đề
+* Matter là gì ?
+* Dùng như thế nào ?
+* Tại sao lại phải dùng nó ?
+* Chứng minh ?
+* Cấu tạo của nó ra sao?
+* Nó nằm ở đâu trong cấu trúc phần mềm hay phần cứng ?
+
+== Matter là gì?
+* Matter là một giao thức mạng chung cho phép tất cả các thiết bị thông minh trên các nền tảng khác nhau (zigbee, wifi, thread, bluetooth,...) có thể tương tác được với nhau.
+
+* Matter là một giao thức kết nối chung, không phải là một nền tảng smarthome như là AppleHomekit, Google Home hoặc là amazon Alexa.
+
+* Matter được phát triển bởi cộng động các công ty công nghệ và được quản lí bới CSA (Connectivity Standards Alliance (CSA, formerly Zigbee Alliance)).
+
+== Mục đích chính của Matter
+* Mục đích chính của dự án Matter là đơn giản hóa sự phát triển cho nhà sản suất và gia tăng tính tương thích cho người dùng.
+* Có thể kết hợp hoạt động chung với các thiết bị smart home sử dụng các giao thức khác: zigbee, z-wave, Bluetooth, Thread, Wi-Fi,...
+
+== Matter hoạt động như thế nào.
+* Matter hoạt động chính dựa trên IP (IPv6), sử dụng cơ chế tương tự như trên internet.
+* Hiện Matter chỉ họat động ở mạng `*_Local_*`
+
+== Communication
+* Matter hiện đang sử dụng `*thread*`, `*Wi-Fi*` cho việc giao tiếp và `*Bluetooth*` để thực hiện commission.
+* Tất cả các Matter devices dựa trên thread đều yêu cầu phải có Bluetooth LE cho phép thêm một devices mới vào network.
+* Wi-Fi có thể được sử dụng cho các ứng dụng băng tầng thấp hoặc cao (tương đương với 2.4Ghz hoặc 5Ghz) trong mạng Local.
+* Thread là một giao thức IPv6-based.
+
+
+== Kiến trúc của Matter
+=== Kiến trúc trong phần mềm
+==== Vị trí của Matter trong mô hình giao thức mạng 7 lớp.
+* Matter project được biết đến như là `Project Chip`
+* Matter defines (dịch sang động từ định nghĩa thấy kì) ứng dụng ở trên cùng của lớp transport, đó là: Session, presentation, Application.
++
+image:project_chip_stack.jpg[]
+
+* Từ mô hình tổng quát bên trên, chúng ta sẽ phân tích Matter application kĩ hơn một chút bằng diagram bên dưới.
+image:matter_architecture.jpg[]
+** Lớp Matter application có thể chia nhỏ, trải dài vùng hoạt đồng từ tầng 5 (session layer) đến tầng 7 (application layer)
+
+==== Matter device
+* Hình ảnh bên dưới mô tả cấu trúc của Matter application chạy trên `nrf Connect SDK` platform và sử  dụng BLE & Thread stack cho mục đích giao tiếp:
+image:nrf Connect Platform overview.png[]
+
+=== Tích hợp vào hệ thống (nrf SDK Nordic)
+* Để có cái nhìn tổng quan và ứng dụng của Matter, chúng ta xem xét ví dụ của Matter được tích hợp bên trong SDK của nordic như sau:
++
+image:matter_template_sample.jpg[]
+
+** Matter được tích hợp bên trong nrF Connect SDK như là một module được quản lí bằng tool West (Zypher's meta tools).
+** driver Multiple Protocol Service Layer (MPSL) của nrf Connect SDK sẽ cho phép Bluetooth LE và Thread hoạt động đồng thời trên cùng radio chip.
+
+==== Tổng quan nrf connect SDK platform
+===== nRF Connect SDK
+* Nordic Semiconductor nRF Connecte SDK cho phép build nhiều ứng dụng khác nhau, bao gồm cellular IOT, BLE, Thread, Zigbee and Bluetooth mesh. SDK chứa tất cả các sample, thư viện và các driver cho các dòng thiết bị sử dụng nRF9160, nRF5340, and nRF52.
+
+* nRF được build dựa trên Zephys RTOS. Cũng được tích hợp thêm một số dự án khác như thư viện mbedTLS, MCU bootloader và Openthread của Thread stack.
+
+===== Bluetooth LE và Thread stacks
+* Trong nRF Connect SDK platform, Bluetooth BLE sẽ thực hiện việc pairing và Thread network provision sẽ thực hiện giữa Matter controller và Matter device.
+
+* Với mục đích giao tiếp Bluetooth LE, nRF connect platform đang sử dụng Bluetooth LE stack (được tích hợp bên trong nRF SDK connect).
+
+* Với mục đích giao tiếp Thread, nRF SDK connect đang sử dụng thread stack, bao gồm nhiều lớp (layer) đã được tích hợp bên trong các project khác nhau. Core chính của Thread là `Openthread`, nhưng nó cũng sẽ yêu cầu chuẩn IEEE 802.15.4 radio driver do SDK cung cấp.
+
+===== Matter stack
+* Matter nằm ở top của lớp Application (trong góc nhìn networking). nrf Connect SDK và Zephyr sẽ cung cấp Bluetooth Lower energy và Thread stack. Đây là hai phần quan trọng bắt buộc tích hợp với Matter stack.
+* Application có thể dùng Matter platform và không cần bất kì các platform để thực hiện việc giao tiếp hoặc tương tác thông qua Matter stack.
+
+===== Build systems
+* nrf Connect SDK sử dụng:
+** GN: được sử dụng trong quá trình build Matter application
+** CMake: Được sử dụng bởi các phần liên quan đến nRF Connect Platform. (thường gọi là nRF Connect SDK và Zephys).
+
+==== Matter - Cluster, Attributes, Command
+* Mỗi Matter data, vể cơ bản sẽ có cấu tạo như sau:
++
+image:Matter_data_model.png[]
+
+
+* Trong đó:
++
+image:matter_element_of_matter.png[]
+
+** *Node*: Là địa chỉa mạng duy nhất trong mạng có chức năng riêng, thường là một thiết bị vật lí mà người dùng dễ dàng nhận biết.
+
+** *Endpoint*: Mỗi node sẽ có một số enpoints, mỗi enpoint có thể hiểu là như một devices ảo cung cấp các service riêng nhưng có thể kết hợp lại với nhau trong cùng 1 device 1 cách hợp lí.
+*** Ví dụ như chúng ta có 2 cái bóng đèn riêng biệt: 1 cái có thể điều chỉnh được độ sáng (dimmable), 1 cái chỉ có thể tắt và mở (on-off). Vậy sẽ có enpoint sở hữu tính năng dimmmable và endpoint sở hữu tính năng on-off.
+*** Enpoint 0 được dành riêng, (cụ thể về enpoint 0 sẽ được mô tả kĩ hơn bên dưới)
+
+** *Cluster*: Một cluster cùng chức năng được nhóm lại với nhau để tái sử dụng.
+
+** *Attributes*: Các thuộc tính cho biết các enponint sở hữu thuộc tính này có thể đọc hoặc ghi.
+**** Các Attribute này có thể cố định hoặc bị mất đi (mất sau khi reboot) hoặc là chỉ có thể đọc, hoặc là đọc-ghi.
+Ví dụ: OnOff cluster sẽ có thuộc tính onoff tương ứng với trạng thái hiện tại. LevelControl cluster sẽ có thuộc tính LeveControl tương ứng với level hiện tại đã được setup trước đó.
+
+** *Command*: Cung cấp khả năng gọi (invoke) một tính năng/chức năng cụ thể nào đó trên cluster. Command có thể có các tham số tương đi kèm với nó.
+Ví dụ: OnOff cluster có command Toggle, cho phép toggles (tắt mở/chạm/đổi trạng thái) của thuộc tính OnOff trong cluster.
+
+- Đây chỉ là một số thành phần trong Matter data model. Trong Matter spec sẽ cung cấp danh sách tiêu chuẩn của các cluster, các thuộc tính và command của các cluster đó.
+
+===== Cluster servers và Clients
+* Mỗi Matter Cluster có một cluster server và cluster client tương ứng.
++
+image:Matter_cluster.jpeg[]
++
+trong đó:
++
+** Matter Switch devices bổ sung OnOff cluster và Level Control cluster clients. Client này sẽ nói chuyện với server tương ứng trên bóng đèn để điều khiển.
+
+
+===== The Endpoint 0
+* Đây là một endpoint với `Root Node`` device type.
+* Endpoint đặc biệt này có cluster chỉ định cho toàn bộ Matter node. Một số cluster là một phần quan trọng trong enpoint này gồm có:
+** `Basic Information Cluster`: Cung cấp các thông tin cơ bản của một device như là: Firmware version, thông tin nhà sản xuất, ....
+** `ACL Cluster server`: Cho phép cấu hình Access control list (danh sách truy cập để điều khiển) của node.
+** `ACL Commisioning Cluster Server`: Cho phép cấu hình của một network (Wi-Fi, Ethernet, Thread) trên con node
+
+==== Matter - Device-to-Device Automations
+==== Matter - Bridge for non-Matter Devices
+==== Matter - Multi-Admin, Identifiers, and Fabrics
+
+==== Matter device
+* Hình ảnh bên dưới mô tả cấu trúc của Matter application chạy trên `nrf Connect SDK` platform và sử  dụng BLE & Thread stack cho mục đích giao tiếp:
+image:nrf Connect Platform overview.png[]
+
+== Ứng dụng và ví dụ
+
+=== Mô hình mạng ứng dụng (topology network)
+. Mô hình mạng ứng dụng chung
++
+image:matter_protocols_controllers.jpg[]
+
+.. Giải thích về mô hình ứng dụng
+*  Để cho phép IPv6 giao tiếp giữa các *Matter* accessory và *Matter* controller thông qua thread network, *Matter* controller yêu cầu Thread Border router.
+* Trong topo này, *Matter* controller không hỗ trợ chuẩn thread network 802.15.4. Border router sẽ là cầu nối giữa thread network với network interface của controller, trong ví dụ này là Wi-Fi.
+* Môi trường phát triển của *Matter* được thiết lập phụ thuộc vào việc Matter controller work ở đâu và work như thế nào trong mô hình mạng chung, các mô hình mạng cụ thể được mô tả bên dưới:
+
+. Thread Border Router sử dụng Raspberry Pi và Matter controller trên PC (CHIP Tool for Linux or macOS)
++
+image:matter_otbr_controller_separate_pc.jpg[]
+
+. Thread Border Router sử dụng Raspberry Pi and Matter controller chạy trên mobile (CHIP Tool for Android)
++
+image:matter_otbr_controller_separate_mobile.jpg[]
+
+. Thread Border Router and Matter controller trên cùng 1 device
++
+image:matter_otbr_controller_same_device.jpg[]
+
+=== Config bắt buộc trong Matter
+* Để sử dụng Matter protocol, cần một số Kconfig sau:
+** `CONFIG_CHIP`: Việc trigger biến này sẽ cho phép Matter protocol stack (giao thức Matter) và một số Kconfig liên quan khác, nó cũng bao gồm cả biên `CONFIG_CHIP_ENABLE_DNSSD_SRP` được yêu cầu trong việc discover (tìm kiếm) các Matter devices bằng cách sử dungj DNS-SD.
+
+** `CONFIG_CHIP_PROJECT_CONFIG`: biến số này sẽ định nghĩa đường dẫn đến file config, file này chỉ định cho một số thiết lập như là: Vendor ID, Product ID và một số  thiết lập đặc biệt khác của Matter setting.
+
+** Vì Matter là lớp application trên cùng, nên sẽ sử dụng nhiều module software khác nhau, để có thể giao tiếp giữa device và các tính năng cần thiết của nó.
+
+** Matter sử dụng các module như là: Bluetooth® LE, the IPv6 stack (currently, only Thread is supported), nRF Security, or MCUboot.
+
+=== Mô tả ứng dụng
+
+=== Hướng dẫn về opensource
+==== Thiết lập environment
+==== Build & compile example.
+==== Chạy example demo có sẵn từ opensource.
+
+
+== Tham khảo
+* Matter architecture
+** https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/ug_matter_architecture.html
+
+* nrf Platform
+** https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/matter/nrfconnect_platform_overview.html
+
+* Create Matter devices (reference from Nordic)
+** https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/ug_matter_creating_accessory.html

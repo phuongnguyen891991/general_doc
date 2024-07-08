@@ -1,0 +1,10 @@
+
+
+=== Build configuration
+==== Overall build flow
+. Look for .gn file in the current directory and walk up the directory tree until one is found. Set this directory to be the “source root” and interpret this file to find the name of the build config file.
+. Execute the build config file (this is the default toolchain).
+. Load the BUILD.gn file in the root directory.
+. Recursively load BUILD.gn in other directories to resolve all current dependencies. If a BUILD file isn't found in the specified location, GN will look in the corresponding location inside tools/gn/secondary.
+. When a target's dependencies are resolved, write out the .ninja file to disk.
+. When all targets are resolved, write out the root build.ninja file.

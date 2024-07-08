@@ -1,0 +1,155 @@
+= OpenWrt Quick Note
+:sectnums: all
+:sectnumlevels: 5
+:toc: left
+:toclevels: 9
+:toc-title: Content
+
+:description: Example AsciiDoc document
+:keywords: AsciiDoc
+:imagesdir: ./Images
+:sourcedir: ./Config
+---
+
+== HOTPLUG
+* Hotplug có thể hiểu như là kernel subsystems cho phép chúng ta load modules và các tập lệnh tùy ý dựa trên các event của hardware.
+* Hotplug thực hiện thông qua hệ thống phức tạp của shell scripts, evironment, hoặc là các events được trigger trong kernel.
+
+== ỨNg dụng trong OpenWrt
+. Mô tả
+* Để dễ hiểu, chúng ta đi chi tiết vào `hotplug` liên quan tới các ethernet interface bên trong systems.
+** Mỗi khi interface up hoặc down, tất cả các script bên trong `/etc/hotplug.d/iface/` sẽ được kích hoạt. Phụ thuộc vào trình tự các số , kí tự alphabet được đặt tên scripts (cái này là quy ước của systems) và các scripts sẽ được kích hoạt theo thứ tự ưu tiên khác nhau. ví dụ: 10-routes, 20-firewall.
+** Quy ước đặt tên: `/etc/hotplug.d/iface/<nn>-<scriptname>`
+
+. Ví dụ
+* Tạo 1 scripts có tên `99-my-action`.
+* Mỗi khi có hardware trigger, interface `up` hoặc `down`, sẽ in ra log của mình:
+
+.. Bước 1: tạo scripts với nội dung sau:
++
+[source, shell]
+----
+#!/bin/sh
+if [ “$ACTION” = ifup ]; then
+    logger -t button-hotplug Device: ${DEVICE} / Interface: ${INTERFACE} / Action: ${ACTION}
+fi
+----
+
+.. Bước 2: Lưu scripts tại: `/etc/hotplug.d/iface/99-my-action`
+
+== PROCD (Sử dụng để khởi động các services)
+. Là gì
+** Là trình quản lí của OpenWrt để theo dõi các proccess được init bằng scripts (gọi thông qua ubus call)
+
+. File sample
++
+[source, shell]
+----
+#!/bin/sh /etc/rc.common
+# Example script
+# Copyright (C) 2007 OpenWrt.org
+START=10
+STOP=15
+
+start() {
+        echo start
+        # commands to launch application
+}
+
+stop() {
+        echo stop
+        # commands to kill application
+}
+
+boot() {
+  echo "Turning on extra comms device"
+  # This is a made up command to illustrate the point
+  comms2_power --on
+  start "$@"
+}
+
+shutdown() {
+  # The service is finished, so turn off the hardware
+  stop
+  echo "Turning off extra comms device"
+  comms2_power --off
+}
+----
++
+[NOTE]
+====
+Bằng `rc.common`, một số command sẵn có bên trong scripts gồm:
+
+* `start`:   Khởi động the service
+* `stop`:    Ngưng the service
+* `restart`: Tái khởi động các service
+* `reload`:  load lại các file config. (or restart if that fails)
+* `enable`:  Cho phép khởi động service một cách tự động.
+* `disable`: Tắt khởi động service một cách tự động.
+====
+
+. Ứng dụng
+.. Bước 1: tạo scripts service in chữ `hello` và lưu tại `/var/myscript.sh`
++
+[source, shell]
+----
+#!/bin/sh
+while [true]
+do
+    echo "hello"
+    sleep 1
+done
+----
+
+.. Bước 2: Tạo procd scripts
++
+[source, shell]
+----
+#!/bin/sh /etc/rc.common
+USE_PROCD=1
+START=95
+STOP=01
+start_service() {
+    procd_open_instance
+    procd_set_param command /bin/sh "/var/myscript.sh"
+    procd_close_instance
+}
+----
+
+
+== UCI config
+. Định nghĩa
+* OpenWrt phụ thuộc vào UCI (Unified Configuration Interface) để config các core service. UCI mặc định cung cấp cách để config file images.
+
+* Để có thể thiết lập systems default ở lần boot đầu tiên, cần tạo scripts file ở thư mục `/etc/uci-defaults`. Tất cả các scripts trong thư mục này sẽ được kích hoạt bởi `/etc/init.d/boot`.
+
+[NOTE]
+====
+* Nếu scripts service exits với code trả về là `0`, nó sẽ bị xóa ngay sau đó.
+* Nếu scripts service exits với code khác `0`, nó sẽ không bị xóa và sẽ được kích hoạt lần nữa ở lần bootup tiếp theo cho đến khi nào thành công thì thoai.
+====
+
+. Ứng dụng
+* Cấu hình `eth0` là cổng wan.
+
+. Bước 1: tạo file có tên `beagle_bone_eth0_wan` có nội dung như sau:
++
+[source, shell]
+----
+uci set network.wan=interface
+uci set network.wan.ifname='eth0'
+uci set network.wan.proto='dhcp'
+uci commit network
+----
+
+. Bước 2: lưu file tại `{working_dir}/openwrt/package/network/config/netifd/files/etc/uci-defaults/beagle_bone_eth0_wan`
+
+. Bước 3: build lại file images.
+
+* Một ví dụ dễ hiểu, khi chúng ta muốn thay đổi config mặc định của systems, thì có thể sử dụng `uci` để set up.
+** Setup trong quá trình tạo ra images OpenWrt.
+** Setup sau khi boot xong systems.
+
+== Tham khảo:
+* https://openwrt.org/docs/guide-developer/procd-init-scripts
+* https://openwrt.org/docs/guide-developer/procd-init-script-example
