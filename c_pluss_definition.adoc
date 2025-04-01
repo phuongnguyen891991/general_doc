@@ -9,9 +9,8 @@
 :keywords: AsciiDoc
 :imagesdir: ./Images
 ---
-
-== Definition
-
+== Main Note
+=== Definition
 ==== *Class* là gì ?
 . Định nghĩa:
 ** Class là một mô tả trừu tượng của nhóm các đối tượng có cùng thuộc tính bản chất, Ngược lại mỗi đối tượng là một thể hiện cụ thể  cho những mô tả trừu tượng đó, và sẽ có những đặc điểm sau:
@@ -142,7 +141,7 @@ Lưu ý rằng, mặc dù chúng ta không thể truy cập trực tiếp tới 
 ==== *virtual* là gì ?
 * Một số tài liệu có viết công dụng của Virtual Function như sau:
 ----
-"Virtual Function là để khai báo một function ở class cha (base class) mà sau đó các class kế thừa (derived class) có thể override function đó"
+Virtual Function là để khai báo một function ở class cha (base class) mà sau đó các class kế thừa (derived class) có thể override function đó
 ----
 
 * Nhưng nếu chỉ là để override thôi thì mình hoàn toàn có thể khai báo function ở base class mà không cần virtual thì vẫn được cơ mà. Vậy ko lẽ Virtual Function này vô dụng? Để làm rõ vấn đề cũng như hạn chế buồn ngủ vì phải đọc quá nhiều chữ, chúng ta thử xét ví dụ nhỏ sau:
@@ -349,6 +348,74 @@ CString::~CString()
 }
 ----
 
+==== Vector
+* là một container trình tự, cho phép lưu trữ một dãy các phần tử cùng kiểu dữ liệu
+* Cung cấp chức năng như một mảng động (tương tự như dynamic array trong ngôn ngữ khác)
+* Ví dụ:
++
+[source, c++]
+----
+std::vector<int> myVector; // khai báo vector rỗng.
+
+std::vector<int> myVector(10); // Vector có 10 phần tử, giá trị mặc định là 0
+std::vector<int> myVector(10, 5); // Vector có 10 phần tử, giá trị ban đầu là 5
+
+// Khởi tạo vector từ mảng
+int myArray[] = {1, 2, 3, 4, 5};
+std::vector<int> myVector(myArray, myArray + sizeof(myArray) / sizeof(int));
+
+// Khởi tạo vector từ initializer list (C++11 trở lên):
+std::vector<int> myVector = {1, 2, 3, 4, 5};
+
+// Các thao tác cơ bản
+
+// Thêm phần tử vào cuối vector:
+myVector.push_back(10);
+
+// Xóa phần tử cuối vector:
+myVector.pop_back();
+
+// Truy cập phần tử:
+int value = myVector[0]; // Truy cập phần tử tại index 0 (không kiểm tra bounds)
+int value = myVector.at(0); // Truy cập phần tử tại index 0 (có kiểm tra bounds)
+
+// Lấy kích thước vector:
+size_t size = myVector.size();
+
+// Kiểm tra vector rỗng:
+bool isEmpty = myVector.empty();
+
+// Xóa tất cả phần tử:
+myVector.clear();
+
+// Duyệt vector:
+for (size_t i = 0; i < myVector.size(); ++i) {
+    std::cout << myVector[i] << " ";
+}
+
+// Sử dụng iterator
+for (std::vector<int>::iterator it = myVector.begin(); it != myVector.end(); ++it) {
+    std::cout << *it << " ";
+}
+
+// Sử dụng range-based for loop (C++11 trở lên)
+for (int value : myVector) {
+    std::cout << value << " ";
+}
+----
+
+*  Ưu điểm của std::vector:
+** Tự động quản lý bộ nhớ: Không cần lo lắng về việc cấp phát và giải phóng bộ nhớ.
+** Dễ dàng sử dụng: Cung cấp nhiều hàm tiện ích để thao tác với vector.
+** Hiệu suất tốt: Truy cập phần tử ngẫu nhiên có độ phức tạp O(1).
+** Tương thích với STL: Có thể sử dụng với các thuật toán và container khác trong STL.
+
+* Một số hàm nâng cao:
+** *insert()*: Chèn phần tử vào vị trí bất kỳ.
+** *erase()*: Xóa phần tử tại vị trí bất kỳ.
+** *resize()*: Thay đổi kích thước vector.
+** *assign()*: Gán giá trị mới cho vector.
+
 ==== *inline* là gì ?
 ** Inline functions (hàm nội tuyến) là một loại hàm trong ngôn ngữ lập trình C++. Từ khoá inline được sử dụng để đề nghị (không phải là bắt buộc) compiler (trình biên dịch) thực hiện inline expansion (khai triển nội tuyến) với hàm đó hay nói cách khác là chèn code của hàm đó tại địa chỉ mà nó được gọi.
 
@@ -372,6 +439,238 @@ CString::~CString()
   . Khi được sử dụng trong file tiêu đề (*.h), nó làm cho file tiêu đề của bạn lớn hơn.
   . Hàm nội tuyến có thể không hữu ích cho nhiều hệ thống nhúng. Vì trong các hệ thống nhúng, kích thước mã quan trọng hơn tốc độ.
 
+=== Tông hợp các câu hỏi phỏng vấn về C++
+. *Sự khác biệt giữa C và C++ là gì ?*
+* C là ngôn ngữ hướng thủ tục trong khi C++ là ngôn ngữ hướng đối tượng.
+* C chỉ hỗ trợ con trỏ trong khi C++ hỗ trợ cả con trỏ và tham chiếu.
+* C không cho phép sử dụng tín năng nạp chồng hàm trong khi C++ cho phép
+* C hỗ trợ các kiểu dữ liệu tích hợp trong khi C++ hỗ trợ các kiểu dữ liệu cài sẵn cũng như do người dùng định nghĩa.
+* Ngôn ngữ C tuân theo phương pháp lập trình từ trên xuống trong khi C++ theo phương pháp lập trình từ dưới lên.
+* C scanf và printf được sử dụng cho đầu vào và đầu ra tiêu chuẩn trong khi C++, cin và cout được cung cấp cho các hoạt động đầu vào và đầu ra tiêu chuẩn.
+
+. Lớp và đối tượng trong C++ là gì ?
+* Một lớp giống như một bản thiết kế của một đối tượng. Nó là một kiểu dữ liệu do người dùng định nghĩa với các thành viên dữ liệu và các hàm thành viên và được định nghĩa với các lớp của từ khóa.
+* Bạn định nghĩa các đối tượng như một thể hiện của một lớp. Khi nó tạo đối tượng, nó có thể hoạt động trên cả thành viên dữ liệu và các hàm thành viên.
+
+. Phạm vi truy cập trong C++ là gì ?
+* Bạn sử dụng công cụ sửa đổi quyền truy cập để xác định khả năng truy cập cho các thành viên trong lớp. Nó định nghĩa cách truy cập thành viên của lớp bên ngoài phạm vi lớp.
+* có 3 loại công cụ sửa đổi quyền truy cập:
+** public
+** private
+** protected
+
+. Sự khác biệt giữa toán tử  '==' và gán '=' ?
+* Toán tử *'=='* kiểm tra xem 2 giá trị có bằng nhau hay không 
+* toán tử *'='* gán giá trị của biểu thức bên phải cho toán hạng bên trái.
+
+. Sự khác biệt giữa vòng lặp *while* và *do-while* là gì ?
+* vòng lặp *while* kiểm tra điều kiện ở đầu vòng lặp và nếu điều kiện được thỏa mãn, câu lệnh bên trong vòng lặp được thực thi.
+* Trong vòng lặp *do-while*, điều kiện được kiểm tra sau khi thực hiện tất cả các câu lệnh trong phần thân của vòng lặp.
+* Nếu điều kiện trong vòng lặp *while* là sai thì không một câu lệnh trong vòng lặp được thực thi. Còn trong *do-while*, nếu điều kiện là sai thì câu lệnh trong vòng lặp được thực thi ít nhất 1 lần.
+
+. Struct và Class khác nhau như thế nào ?
+* *Struct* : các thành viên của nó được công khai theo mặc định.
+* *class* : Các thành viên của nó là riêng tư theo mặc định.
+
+. Tính đa hình trong C++ là gì ?
+* Thuật ngữ đa hình dùng để chỉ sự hiện diện của nhiều dạng. Tính đa hình thường xảy ra khi có một hệ thống phân cấp của các lớp được kiên kết với nhau bằng cách kế thừa.
+* Tính đa hình của C++ có nghĩa là tùy thuộc vào loại đối tượng gọi hàm, một hàm khác sẽ được thực thi.
+
+. So sánh thời gian biên dịch và thời gian chạy đa hình ?
+.. Đa hình thời gian biên dịch: 
+  * Còn được gọi là đa hình tĩnh hoặc liên kết tĩnh Xảy ra khi trình biên dịch có thể xác định phương thức nào sẽ được gọi tại thời điểm biên dịch.
+  * Điều này thường được thực hiện thông qua nạp chồng phương thức hoặc nạp chồng toán tử.
+  * Hiệu suất cao nhưng tính linh hoạt lại thấp.
+.. Đa hình thời gian chạy:
+  * Còn được gọi là đa hình động hoặc liên kết động Xảy ra khi phương thức nào sẽ được gọi được xác định tại thời gian chạy.
+  * Điều này thường được thực hiện thông qua ghi đè phương thức và sử dụng các phương thức ảo (virtual methods)
+  * Hiệu suất thấp hơn nhưng tính linh hoạt cao hơn.
+
+. Hàm tạo trong C++ là gì ?
+* Là một kiểu đặc biệt của hàm thành viên, giúp khởi tạo (initialize) đối tượng tự động khi nó được tạo. Trình biên dịch xác định hàm thành viên là hàm tạo thông qua tên và kiểu trả về của nó.
+* Hàm tạo có cùng tên với tên của lớp và nó không có bất kì kiểu trả về nào, thêm vào đó, hàm tạo luôn là public.
+
+. Hàm ảo là gì ?
+* Một hàm thành viên trong lớp cơ sở được định nghĩa lại trong một lớp dẫn xuất là một hàm ảo. Nó được khai báo bằng từ khóa ảo (virtual). Nó đảm bảo rằng hàm chính xác được gọi cho một đối tượng bất kể loại tham chiếu/con trỏ được sử dụng cho lệnh gọi hàm. Các hàm ảo được sử dụng chủ yếu cho tính đa hình thời gian chạy.
+
+. Friend class và friend function là gì ?
+* *Friend function*:
+** là một hàm không phải thành viên của lớp nhưng được cấp quyền truy cập vào các thành viên _private_ và _protect_ của lớp đó.
+** Hàm friend được khai báo bên trong định nghĩa lớp bằng từ khóa *_friend_*.
+** Ví dụ :
++
+[source, c++]
+----
+  #include <iostream>
+
+  class MyClass {
+  private:
+      int privateVar;
+
+  public:
+      MyClass(int val) : privateVar(val) {}
+
+      friend void friendFunction(MyClass obj); // Khai báo hàm bạn
+  };
+
+  void friendFunction(MyClass obj) {
+      std::cout << "Giá trị privateVar từ hàm bạn: " << obj.privateVar << std::endl; // Truy cập privateVar
+  }
+
+  int main() {
+      MyClass obj(10);
+      friendFunction(obj); // Gọi hàm bạn
+      return 0;
+  }
+----
+
+* *friend Class*:
+** Là một lớp được cấp quyền truy cập vào tất cả các thành viên _private_ và _protected_ của một lớp khác.
+** Lớp friend được khai báo bên trong định nghĩa lớp bằng từ khóa *_friend_*.
+** Ví dụ:
++
+[source, c++]
+----
+#include <iostream>
+
+class MyClass {
+private:
+    int privateVar;
+
+public:
+    MyClass(int val) : privateVar(val) {}
+
+    friend class FriendClass; // Khai báo lớp bạn
+};
+
+class FriendClass {
+public:
+    void accessPrivate(MyClass obj) {
+        std::cout << "Giá trị privateVar từ lớp bạn: " << obj.privateVar << std::endl; // Truy cập privateVar
+    }
+};
+
+int main() {
+    MyClass obj(20);
+    FriendClass friendObj;
+    friendObj.accessPrivate(obj); // Gọi phương thức của lớp bạn
+    return 0;
+}
+----
++
+[Note]
+* _friend_ làm suy yếu tính đóng gói.
+* không phải là mối quan hệ hai chiều
+* Không có tính kế thừa.
+
+. Ba loại phạm vi truy cập trong C++ khác nhau là gì ?
+* public: Tất cả các chức năng và dữ liệu của thành viên đều được truy cập bên ngoài lớp.
+* Private: Tất cả các hàm thành viên và thành viên dữ liệu đều có thể truy cập được bên trong lớp và lớp dẫn xuất.
+* Protected: Tất cả các chức năng thành viên và thành viên dữ liệu không thể truy cập bên ngoài lớp.
+
+. Một trừu tượng trong C++ là gì ?
+* Trừu tượng có nghĩa là hiển thị các chi tiết cần thiết cho người dùng trong khi ẩn các chi tiết không liên quan hoặc cụ thể  là không muốn hiển thị cho người dùng.
+
+. Hàm hủy trong C++ là gì ?
+* Hàm *_destructor_* là một loại hàm thành viên đặc biệt khác của lớp được thực thi khi một đối tượng của class đó bị hủy. Trong khi hàm *_constructor_* được thiết kế để khởi tạo một class.
+* Hàm *_destructor_* được thiết kế để hỗ trợ việc dọn dọp bộ nhớ.
+
+. Có thể nạp chồng giải mã không ? Đưa ra lý do cho câu trả lời của bạn ?
+* KHÔNG. Vì hàm hủy không nhận đối số hoặc trả về bất cứ thứ gì. Chỉ có một hàm hủy rỗng cho mỗi lớp. Nó phải có một danh sách tham số void.
+
+. Lớp trừu tượng là gì ? khi nào thì mình được sử dụng nó ?
+* Một lớp trừu tượng mà một lớp mà các đối tượng của nó không thể được tạo ra. Nó đóng vai trò là lớp cha cho các lớp dẫn xuất. Việc đặt một hàm thuần ảo trong lớp làm cho nó trở thành một lớp trừu tượng.
+
+. *Bạn hiểu gì về thành viên tĩnh và hàm thành viên tĩnh ?*
+* Một biến trong một lớp được khai báo là tĩnh có không gian của nó được phân bổ cho thời gian tồn tại của chương trình. Bất kể số lượng của lớp đó được tạo ra, chỉ có một bản sao duy nhất của thành viên tĩnh. Tất cả các đối tượng của lớp đó đều có thể truy cập cùng một thành viên tĩnh.
+
+. *Khái niệm C++ OOP là gì ?*
+* Lập trình hướng đối tượng là một kĩ thuật lập trình cho phép lập trình viên tạo ra các đối tượng trong code trừu tượng hóa các đối tượng.
+** *Đối Tượng*
+*** Một đối tượng bao gồm 2 thông tin: thuộc tính và phương thức.
+*** Thuộc tính chính là những thông tin đặc tính của đối tượng. Phương thức là những thao tác hành động mà đối tượng đó có thể thực hiện.
+** *Lớp*
+*** Là một kiểu dữ liệu bao gồm các thuộc tính và phương thức định nghĩa từ trước. Đây là sự trừu tượng hóa của đối tượng.
+*** Khác với kiểu dữ liệu thông thường, một lớp là một đơn vị bao gồm sự kết hợp giữa các phương thức và thuộc tính. (HIểu đơn giản là các đối tượng có đặc tính tương tự nhau được gom lại thành một lớp đối tượng.)
+
+. *Kiểu trả về void() được sử dụng khi nào ?*
+* KHi không muốn trả về bất kì giá trị nào. NÓ chỉ định rằng hàm không trả về giá trị.
+
+. *Gọi theo giá trị và gọi theo tham chiếu trong C++ là gì ?*
+* Trong phương thức gọi theo giá trị, một bản sao giá trị của tham số được tạo và truyền vào hàm. Bất kì thay đổi nào được thực hiện với tham số bên trong hàm sẽ không ảnh hưởng đến giá trị gốc bên ngoài hàm.
+* Gọi theo tham chiếu: Địa chỉ của biến tham số được truyền vào hàm. Bất kì những thay đổi nào thực hiện với tham số bên trong hàm sẽ ảnh hưởng trực tiếp tới giá trị gốc bên ngoài hàm.
+
+. *Hàm inline là gì ?*
+** Là hàm nội tuyến khi được gọi sẽ mở rộng theo dòng. Khi được gọi, compiler sẽ chèn nguyên đoạn code của hàm nội tuyến tại thời điểm được gọi.
+
+. *Con trỏ trong C++ là gì ?*
+* Con trỏ là các biến lưu trữ địa chỉ bộ nhớ của một biến khác. Kiểu của biến phải tương ứng với kiểu của con trỏ.
+
+. *Toán tử phân giải phạm vi là gì ?*
+* Toán tử phân giải phạm vi được biểu diễn dưới dạng *::* được sử dụng để truy cập các thành viên của một phạm vi (scope), chẳng hạn như:
+** Truy cập các thành viên của một lớp.
+** Truy cập các thành viên của một không gian tên.
+** Truy cập các biến toàn cục.
+** Truy cập các thành viên của một enum.
+
+. *Hàm tạo là gì ?*
+* Hàm tạo được định nghĩa là một hàm thành viên được gọi bất cứ khi nào bạn tạo ra một đối tượng; Nó có cùng tên với tên của lớp.
+* Có 2 loại hàm tạo:
+** Hàm tạo mặc định: Hàm tạo được tạo tự động này không nhận bất kì đối số nào.
+** Hàm tạo được tham số hóa: Trong hàm tạo này, nó có thể truyền các đối số.
+
+. *Operator overloading and function overloading là gì ?*
+* Một ví dụ về tính đa hình thời gian biên dich là nạp chồng toán tử. Đây là khái niệm sửa đổi toán tử C++ hiện có mà không làm thay đổi ý nghĩa ban đầu của nó.
+
+. *Thảo luận về sự khác biệt giữa new và malloc ?*
+* *New* là một từ khóa, thực chất là một toán tử  còn *malloc* là một hàm. Một hàm sẽ có nhiều thủ tục hơn như là khai báo hàm, định nghĩa hàm, đặt địa chỉ hàm trong vùng nhớ, hàm có giá trị trả về hay không ? có đối số đầu vào hay không.
+
+. *Nạp chông toán tử  (operator overloading) là gì ?*
+* Là một tính năng trong lập trình hướng đối tượng cho phép bạn định nghĩa lại ý nghĩa của các toán tử  (+, -, x, /,...) khi chúng được áp dụng cho các đối tượng của một lớp do người dùng định nghĩa.
+
+. *Hàm friend là gì ?*
+* Là hàm nhưng không phải là hàm thành viên của lớp, nhưng được cấp quyền truy cập vào các thành viên _private_ và _protected_ của lớp đó.Điều này phá vỡ các nguyên tắc đóng gói thông thường nhưng có thể có hữu ích trong một số tình huống nhất định.
+
+. *STL là gi ?*
+* Là viết tắt của thư viện mẫu tiêu chuẩn, cung cấp tập hợp các lớp và hàm mẫu giúp lập trình viên thao tác dữ liệu và các thuật toán hiệu quả.
+
+. *Coppy constructor là gì ?*
+* Là một hàm đặc biệt được dùng để tạo đối tượng mới từ một đối tượng đã tồn tại. Nó sao chép các giá trị của các thành viên dữ liệu từ đối tượng gốc sang đối tượng mới.
+
+. *Kế thừa là gì ?*
+* Là một cơ chế cho phép tạo ra các lớp mới dựa trên các lớp đã tồn tại. Lớp con sẽ kế thừa các thuộc tính và phương thức từ lớp cha, giúp bạn tái sử dụng mã nguồn và xây dựng các hệ thống phân cấp lớp một cách hiệu quả.
+
+. *Trừu tượng là gì ?*
+* Là một kĩ thuật trong đó bạn chỉ thể hiện chức năng cho người dùng.Tức là chi tiết mà bạn muốn người dùng xem, ẩn các chi tiết nội bộ hoặc các chi tiết triển khai.
+
+. *Hàm ảo khác với hàm thuần ảo như thế nào ?*
+* hàm ảo và hàm thuần ảo đều là cơ chế quan trọng trong lập trình hướng đối tượng của C++, đặc biệt là khi làm việc với tính đa hình.
+* Hàm ảo:
+** là một hàm thành viên được khai báo với từ khóa _virtual_ trong lớp cơ sở.
+** Cho phép các lớp con ghi đè hàm này để cung cấp một triển khai riêng.
+** Lớp cơ sở có thể cung cấp một lớp triển khai mặc định cho hàm ảo.
+* Hàm thuần ảo:
+** là một hàm ảo không có triển khai trong lớp cơ sở.
+** Được khai báo bằng cách gán _=0_ sau khai báo hàm (ví dụ: virtual void foo() = 0).
+** Lớp chứa ít nhất một hàm thuần ảo được gọi là lớp trừu tượng.
+
+. *Một hàm ảo có thể được gọi từ một phương thức khởi tạo không ?*
+** CÓ, tuy nhiên cần lưu ý một số điều quan trọng:
+** Hành vi của hàm ảo trong hàm tạo.
+*** Khi một hàm ảo được gọi từ một hàm tạo của lớp cơ sở, hàm ảo được gọi sẽ là phiên bản của lớp cơ sở, không phải phiên bản của lớp con.
+*** Điều này là do đối tượng lớp con chưa được khởi tạo đầy đủ tại thời điểm hàm tạo của lớp cơ sở được gọi.
+Nói cách khác, tính đa hình động (dynamic polymorphism) không hoạt động như mong đợi trong hàm tạo.
+*** Lý do:
+**** Tại thời điểm hàm tạo của lớp cơ sở đang chạy, đối tượng lớp con vẫn chưa được tạo ra hoàn chỉnh. Các phần của đối tượng thuộc lớp con vẫn chưa được khởi tạo.
+Do đó, việc gọi một hàm ảo của lớp con có thể dẫn đến hành vi không xác định hoặc lỗi.
+
+. *Con trỏ là gì trong C++ ?*
+* Giống như trong C, nó được dùng để lưu địa chỉ của một biến có cùng kiểu dữ liệu tương ứng.
+
+. *Cấp phát và giải phóng bộ nhớ trong C++ là gì ?*
+* Cấp phát và giải phóng bộ nhớ trong C++ là một quá trình quản lí bộ nhớ động trong quá trình chạy chương trình. Cho phép cấp phát bộ nhớ khi cần thiết và giải phóng bộ nhớ khi không còn sử dụng, giúp tối ưu bộ nhớ.
+** Cấp phát bộ nhớ: toán tử *new_* hoặc hàm *_malloc_*.
+** Giải phóng bộ nhớ: toán tử *_delete_* hoặc hàm *_free_*.
 
 
 === Ghi chú:
